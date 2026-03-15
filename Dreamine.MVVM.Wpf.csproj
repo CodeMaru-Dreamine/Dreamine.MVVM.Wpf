@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<PackageId>Dreamine.MVVM.Wpf</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Dreamine Core Team</Authors>
+		<Company>Dreamine</Company>
+		<Description>WPF-specific bootstrap and runtime integration layer for the Dreamine MVVM framework.</Description>
+		<PackageTags>mvvm;wpf;dreamine;bootstrap;runtime</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/CodeMaru-Dreamine/Dreamine.MVVM.Wpf</RepositoryUrl>
+		<Title>Dreamine.MVVM.Wpf</Title>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="icon.ico" Pack="true" PackagePath="\" Visible="false" Condition="Exists('icon.ico')" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Dreamine.MVVM.Core\Dreamine.MVVM.Core.csproj" />
+		<ProjectReference Include="..\Dreamine.MVVM.Locators\Dreamine.MVVM.Locators.csproj" />
+	</ItemGroup>
+
+</Project>
