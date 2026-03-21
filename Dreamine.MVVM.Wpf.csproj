@@ -16,16 +16,18 @@
 		<RepositoryUrl>https://github.com/CodeMaru-Dreamine/Dreamine.MVVM.Wpf</RepositoryUrl>
 		<Title>Dreamine.MVVM.Wpf</Title>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Core\Dreamine.MVVM.Core.csproj" />
-	  <ProjectReference Include="..\Locators\Dreamine.MVVM.Locators.csproj" />
+		<ProjectReference Include="..\Core\Dreamine.MVVM.Core.csproj" />
+		<ProjectReference Include="..\Locators\Dreamine.MVVM.Locators.csproj" />
 	</ItemGroup>
 
 </Project>
