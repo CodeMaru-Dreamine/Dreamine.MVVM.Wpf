@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 
 		<PackageId>Dreamine.MVVM.Wpf</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Dreamine Core Team</Authors>
 		<Company>Dreamine</Company>
 		<Description>WPF-specific bootstrap and runtime integration layer for the Dreamine MVVM framework.</Description>
@@ -27,6 +27,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Core\Dreamine.MVVM.Core.csproj" />
+		<ProjectReference Include="..\Extensions\Dreamine.MVVM.Extensions.csproj" />
+		<ProjectReference Include="..\Locators.Wpf\Dreamine.MVVM.Locators.Wpf.csproj" />
 		<ProjectReference Include="..\Locators\Dreamine.MVVM.Locators.csproj" />
 	</ItemGroup>
 
