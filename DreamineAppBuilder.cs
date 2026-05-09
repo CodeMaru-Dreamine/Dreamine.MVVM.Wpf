@@ -8,6 +8,7 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using Dreamine.MVVM.Core.Locators;
 
 namespace Dreamine.MVVM.Wpf
 {
@@ -48,6 +49,8 @@ namespace Dreamine.MVVM.Wpf
                 RegisterDefaultServices();
             }
 
+            RegisterDefaultViewModelResolver();
+
             // ① DI 자동 등록
             DMContainer.AutoRegisterAll(rootAssembly);
 
@@ -65,6 +68,15 @@ namespace Dreamine.MVVM.Wpf
             {
                 RegisterAutoNavigatorHandlerOnce(options.DefaultRegionName);
             }
+        }
+
+        /// <summary>
+        /// Registers the default ViewModel resolver used by ViewModelLocator.
+        /// </summary>
+        private static void RegisterDefaultViewModelResolver()
+        {
+            ViewModelLocator.RegisterResolver(
+                new DreamineContainerViewModelResolver());
         }
 
         /// <summary>
