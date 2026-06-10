@@ -13,6 +13,7 @@ This package is responsible for:
 - View ↔ ViewModel registration
 - automatic DI registration through `DMContainer`
 - automatic `DataContext` attachment when a View is loaded
+- optional region navigator registration for the currently loaded Window
 - keeping WPF runtime concerns out of platform-neutral libraries
 
 ## Why this package exists
@@ -32,6 +33,9 @@ It performs the following steps:
 1. registers View ↔ ViewModel mappings
 2. auto-registers types into `DMContainer`
 3. hooks the WPF `Loaded` event to assign `DataContext` automatically when needed
+4. optionally registers the Window region navigator for the current Window region
+
+When automatic navigator registration is enabled, each loaded Window can refresh the global `INavigator` registration with its matching region. This prevents navigation from staying pinned to a previously loaded Window.
 
 ## Usage
 

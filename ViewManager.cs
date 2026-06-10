@@ -25,8 +25,26 @@ namespace Dreamine.MVVM.Wpf
             ArgumentNullException.ThrowIfNull(viewModelType);
 
             object viewModel = DMContainer.Resolve(viewModelType);
-
             object? view = ViewModelLocator.ResolveView(viewModelType);
+            DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: true);
+        }
+
+        /// <inheritdoc />
+        public void Navigate(object viewModel)
+        {
+            ArgumentNullException.ThrowIfNull(viewModel);
+
+            Type viewModelType = viewModel.GetType();
+            object? view = ViewModelLocator.ResolveView(viewModelType);
+            DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: false);
+        }
+
+        private static void DisplayResolvedView(
+            object? view,
+            object viewModel,
+            Type viewModelType,
+            bool useRegionNavigator)
+        {
             if (view is null)
             {
                 return;
@@ -39,11 +57,11 @@ namespace Dreamine.MVVM.Wpf
                     break;
 
                 case UserControl userControl:
-                    ShowUserControl(userControl, viewModel);
+                    ShowUserControl(userControl, viewModel, useRegionNavigator);
                     break;
 
                 case Page page:
-                    ShowPage(page, viewModel);
+                    ShowPage(page, viewModel, useRegionNavigator);
                     break;
             }
         }
@@ -71,12 +89,12 @@ namespace Dreamine.MVVM.Wpf
             window.Show();
         }
 
-        private static void ShowUserControl(UserControl userControl, object viewModel)
+        private static void ShowUserControl(UserControl userControl, object viewModel, bool useRegionNavigator)
         {
             userControl.DataContext = viewModel;
 
-            INavigator? navigator = TryResolve<INavigator>();
-            if (navigator is not null)
+            INavigator? navigator = useRegionNavigator ? TryResolve<INavigator>() : null;
+            if (navigator is not null && navigator is not ViewManager)
             {
                 navigator.Navigate(viewModel);
                 return;
@@ -90,12 +108,12 @@ namespace Dreamine.MVVM.Wpf
             }.Show();
         }
 
-        private static void ShowPage(Page page, object viewModel)
+        private static void ShowPage(Page page, object viewModel, bool useRegionNavigator)
         {
             page.DataContext = viewModel;
 
-            INavigator? navigator = TryResolve<INavigator>();
-            if (navigator is not null)
+            INavigator? navigator = useRegionNavigator ? TryResolve<INavigator>() : null;
+            if (navigator is not null && navigator is not ViewManager)
             {
                 navigator.Navigate(viewModel);
                 return;
@@ -161,7 +179,7 @@ namespace Dreamine.MVVM.Wpf
             {
                 return DMContainer.Resolve<T>();
             }
-            catch
+            catch (InvalidOperationException)
             {
                 return null;
             }

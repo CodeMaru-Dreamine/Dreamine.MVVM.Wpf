@@ -27,7 +27,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Core\Dreamine.MVVM.Core.csproj" />
-		<ProjectReference Include="..\Extensions\Dreamine.MVVM.Extensions.csproj" />
 		<ProjectReference Include="..\Locators.Wpf\Dreamine.MVVM.Locators.Wpf.csproj" />
 		<ProjectReference Include="..\Locators\Dreamine.MVVM.Locators.csproj" />
 	</ItemGroup>

@@ -1,5 +1,4 @@
 ﻿using Dreamine.MVVM.Core;
-using Dreamine.MVVM.Extensions;
 using Dreamine.MVVM.Interfaces.Navigation;
 using Dreamine.MVVM.Interfaces.Windows;
 using Dreamine.MVVM.Locators;
@@ -162,11 +161,6 @@ namespace Dreamine.MVVM.Wpf
             if (string.IsNullOrWhiteSpace(regionName))
             {
                 throw new ArgumentException("Region name must not be empty.", nameof(regionName));
-            }
-
-            if (DMContainer.IsRegistered<INavigator>())
-            {
-                return;
             }
 
             ContentControl? region = RegionBinderHelper.FindRegionControl(window, regionName);

@@ -13,6 +13,7 @@ Dreamine MVVM 프레임워크를 위한 WPF 전용 부트스트랩 및 런타임
 - View ↔ ViewModel 자동 매핑 등록
 - `DMContainer` 기반 자동 DI 등록
 - View 로드 시 `DataContext` 자동 연결
+- 현재 로드된 Window의 Region 기반 navigator 선택적 등록
 - 플랫폼 중립 라이브러리와 WPF 런타임 책임 분리
 
 ## 왜 이 패키지가 필요한가
@@ -35,6 +36,9 @@ Dreamine MVVM 프레임워크를 위한 WPF 전용 부트스트랩 및 런타임
 1. View ↔ ViewModel 매핑 등록
 2. `DMContainer` 자동 등록 수행
 3. WPF `Loaded` 이벤트를 연결하여 필요한 경우 `DataContext` 자동 주입
+4. 옵션이 켜져 있으면 현재 Window의 Region을 기준으로 `INavigator` 등록
+
+자동 navigator 등록을 사용하는 경우, Window가 로드될 때 해당 Window의 Region이 전역 `INavigator` 등록을 갱신합니다. 그래서 이전에 로드된 Window의 Region에 계속 고정되는 상황을 피할 수 있습니다.
 
 ## 사용 방법
 
