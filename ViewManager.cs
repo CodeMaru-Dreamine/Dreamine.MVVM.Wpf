@@ -3,6 +3,7 @@ using Dreamine.MVVM.Interfaces.Navigation;
 using Dreamine.MVVM.Interfaces.Windows;
 using Dreamine.MVVM.Locators;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -47,6 +48,9 @@ namespace Dreamine.MVVM.Wpf
         {
             if (view is null)
             {
+                Debug.WriteLine(
+                    $"[ViewManager] No view found for {viewModelType.FullName}. " +
+                    "Ensure the view is registered via ViewModelLocator.Register<TView, TViewModel>().");
                 return;
             }
 
@@ -184,14 +188,8 @@ namespace Dreamine.MVVM.Wpf
 
         private static T? TryResolve<T>() where T : class
         {
-            try
-            {
-                return DMContainer.Resolve<T>();
-            }
-            catch (InvalidOperationException)
-            {
-                return null;
-            }
+            DMContainer.TryResolve<T>(out var result);
+            return result;
         }
     }
 }
