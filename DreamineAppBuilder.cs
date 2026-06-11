@@ -1,4 +1,5 @@
 ﻿using Dreamine.MVVM.Core;
+using Dreamine.MVVM.Core.Locators;
 using Dreamine.MVVM.Interfaces.Navigation;
 using Dreamine.MVVM.Interfaces.Windows;
 using Dreamine.MVVM.Locators;
@@ -7,7 +8,6 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Dreamine.MVVM.Core.Locators;
 
 namespace Dreamine.MVVM.Wpf
 {
@@ -51,7 +51,7 @@ namespace Dreamine.MVVM.Wpf
             RegisterDefaultViewModelResolver();
 
             // ① DI 자동 등록
-            DMContainer.AutoRegisterAll(rootAssembly);
+            DreamineAutoRegistrar.RegisterAll(rootAssembly);
 
             // ② View ↔ ViewModel 자동 매핑
             ViewModelLocator.RegisterAll(rootAssembly);
@@ -86,12 +86,12 @@ namespace Dreamine.MVVM.Wpf
         {
             if (!DMContainer.IsRegistered<IWindowStateService>())
             {
-                DMContainer.RegisterSingleton<IWindowStateService>(new WindowStateService());
+                DMContainer.RegisterSingleton<IWindowStateService, WindowStateService>();
             }
 
             if (!DMContainer.IsRegistered<IViewManager>())
             {
-                DMContainer.RegisterSingleton<IViewManager>(new ViewManager());
+                DMContainer.RegisterSingleton<IViewManager, ViewManager>();
             }
         }
 

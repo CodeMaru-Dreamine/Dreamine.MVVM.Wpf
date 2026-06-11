@@ -79,6 +79,15 @@ namespace Dreamine.MVVM.Wpf
 
             window.DataContext = viewModel;
 
+            // 메인 윈도우를 Owner로 지정합니다.
+            // WPF는 Owner가 닫힐 때 소유된 모든 창을 자동으로 닫아주므로
+            // 메인 창 종료 시 팝업이 남아있는 문제를 방지합니다.
+            var mainWindow = Application.Current?.MainWindow;
+            if (mainWindow is not null && mainWindow != window && mainWindow.IsLoaded)
+            {
+                window.Owner = mainWindow;
+            }
+
             windowStateService?.MarkOpened(windowKey);
 
             window.Closed += (_, _) =>
