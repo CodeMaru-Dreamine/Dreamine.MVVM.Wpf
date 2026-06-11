@@ -20,15 +20,22 @@ namespace Dreamine.MVVM.Wpf
     {
         private readonly IServiceResolver _resolver;
         private readonly List<IViewDisplayStrategy> _customStrategies = new();
+        private readonly double _fallbackWindowWidth;
+        private readonly double _fallbackWindowHeight;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver.
+        /// Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver
+        /// and optional fallback window dimensions for UserControl/Page views.
         /// Prefer this constructor in tests and production code to avoid the global DMContainer dependency.
         /// </summary>
         /// <param name="resolver">The service resolver used to obtain ViewModel instances.</param>
-        public ViewManager(IServiceResolver resolver)
+        /// <param name="fallbackWindowWidth">Width of the fallback window. Defaults to 800.</param>
+        /// <param name="fallbackWindowHeight">Height of the fallback window. Defaults to 600.</param>
+        public ViewManager(IServiceResolver resolver, double fallbackWindowWidth = 800, double fallbackWindowHeight = 600)
         {
             _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            _fallbackWindowWidth = fallbackWindowWidth > 0 ? fallbackWindowWidth : 800;
+            _fallbackWindowHeight = fallbackWindowHeight > 0 ? fallbackWindowHeight : 600;
         }
 
         /// <summary>
@@ -169,8 +176,8 @@ namespace Dreamine.MVVM.Wpf
             new Window
             {
                 Content = userControl,
-                Width = 800,
-                Height = 600
+                Width = _fallbackWindowWidth,
+                Height = _fallbackWindowHeight
             }.Show();
         }
 
@@ -188,8 +195,8 @@ namespace Dreamine.MVVM.Wpf
             new Window
             {
                 Content = page,
-                Width = 800,
-                Height = 600
+                Width = _fallbackWindowWidth,
+                Height = _fallbackWindowHeight
             }.Show();
         }
 

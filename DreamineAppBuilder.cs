@@ -45,7 +45,7 @@ namespace Dreamine.MVVM.Wpf
 
             if (options.RegisterDefaultServices)
             {
-                RegisterDefaultServices();
+                RegisterDefaultServices(options);
             }
 
             RegisterDefaultViewModelResolver();
@@ -100,7 +100,7 @@ namespace Dreamine.MVVM.Wpf
         /// </list>
         /// </para>
         /// </remarks>
-        public static void RegisterDefaultServices()
+        public static void RegisterDefaultServices(DreamineWpfOptions? options = null)
         {
             if (!DMContainer.IsRegistered<IWindowStateService>())
             {
@@ -109,7 +109,12 @@ namespace Dreamine.MVVM.Wpf
 
             if (!DMContainer.IsRegistered<IViewManager>())
             {
-                DMContainer.RegisterSingleton<IViewManager, ViewManager>();
+                var vm = options is not null
+                    ? new ViewManager(DMContainer.GetResolver(),
+                        options.FallbackWindowWidth,
+                        options.FallbackWindowHeight)
+                    : new ViewManager();
+                DMContainer.RegisterSingleton<IViewManager>(vm);
             }
 
             if (!DMContainer.IsRegistered<IDialogService>())

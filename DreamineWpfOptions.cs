@@ -28,6 +28,18 @@ namespace Dreamine.MVVM.Wpf
         public string DefaultRegionName { get; set; } = "SubPage";
 
         /// <summary>
+        /// Gets or sets the fallback window width used when displaying a UserControl or Page
+        /// without a region navigator. Defaults to 800.
+        /// </summary>
+        public double FallbackWindowWidth { get; set; } = 800;
+
+        /// <summary>
+        /// Gets or sets the fallback window height used when displaying a UserControl or Page
+        /// without a region navigator. Defaults to 600.
+        /// </summary>
+        public double FallbackWindowHeight { get; set; } = 600;
+
+        /// <summary>
         /// Gets the default Dreamine WPF options.
         /// </summary>
         /// <returns>A new options instance with safe defaults.</returns>
