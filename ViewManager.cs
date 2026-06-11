@@ -1,9 +1,10 @@
-﻿using Dreamine.MVVM.Core;
+using Dreamine.MVVM.Core;
 using Dreamine.MVVM.Interfaces.DependencyInjection;
 using Dreamine.MVVM.Interfaces.Navigation;
 using Dreamine.MVVM.Interfaces.Windows;
 using Dreamine.MVVM.Locators;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,14 +13,17 @@ namespace Dreamine.MVVM.Wpf
 {
     /// <summary>
     /// Resolves and displays WPF Views based on ViewModel types.
+    /// Custom view types are supported by registering <see cref="IViewDisplayStrategy"/>
+    /// implementations via <see cref="RegisterDisplayStrategy"/>.
     /// </summary>
     public sealed class ViewManager : IViewManager
     {
         private readonly IServiceResolver _resolver;
+        private readonly List<IViewDisplayStrategy> _customStrategies = new();
 
         /// <summary>
         /// Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver.
-        /// Prefer this constructor in production and test code to avoid the global DMContainer dependency.
+        /// Prefer this constructor in tests and production code to avoid the global DMContainer dependency.
         /// </summary>
         /// <param name="resolver">The service resolver used to obtain ViewModel instances.</param>
         public ViewManager(IServiceResolver resolver)
@@ -32,6 +36,18 @@ namespace Dreamine.MVVM.Wpf
         /// </summary>
         public ViewManager() : this(DMContainer.GetResolver())
         {
+        }
+
+        /// <summary>
+        /// Registers a custom display strategy that handles view types not natively supported
+        /// (Window, UserControl, Page). Strategies are evaluated in registration order before
+        /// the built-in switch, so registered strategies take precedence.
+        /// </summary>
+        /// <param name="strategy">The strategy to register.</param>
+        public void RegisterDisplayStrategy(IViewDisplayStrategy strategy)
+        {
+            ArgumentNullException.ThrowIfNull(strategy);
+            _customStrategies.Add(strategy);
         }
 
         /// <inheritdoc />
@@ -74,6 +90,17 @@ namespace Dreamine.MVVM.Wpf
                 return;
             }
 
+            // Custom strategies take precedence — checked before built-in WPF types.
+            foreach (var strategy in _customStrategies)
+            {
+                if (strategy.CanHandle(view))
+                {
+                    strategy.Display(view, viewModel, viewModelType, useRegionNavigator);
+                    return;
+                }
+            }
+
+            // Built-in WPF type handling.
             switch (view)
             {
                 case Window window:
@@ -86,6 +113,12 @@ namespace Dreamine.MVVM.Wpf
 
                 case Page page:
                     ShowPage(page, viewModel, useRegionNavigator);
+                    break;
+
+                default:
+                    Debug.WriteLine(
+                        $"[ViewManager] No display strategy found for view type {view.GetType().FullName}. " +
+                        "Register a custom IViewDisplayStrategy via RegisterDisplayStrategy().");
                     break;
             }
         }
@@ -184,24 +217,16 @@ namespace Dreamine.MVVM.Wpf
             string name = type.Name;
 
             if (name.EndsWith("ViewModel", StringComparison.Ordinal))
-            {
                 return name[..^"ViewModel".Length];
-            }
 
             if (name.EndsWith("Window", StringComparison.Ordinal))
-            {
                 return name[..^"Window".Length];
-            }
 
             if (name.EndsWith("View", StringComparison.Ordinal))
-            {
                 return name[..^"View".Length];
-            }
 
             if (name.EndsWith("Page", StringComparison.Ordinal))
-            {
                 return name[..^"Page".Length];
-            }
 
             return name;
         }

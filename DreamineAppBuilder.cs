@@ -82,6 +82,24 @@ namespace Dreamine.MVVM.Wpf
         /// Dreamine WPF 기본 서비스를 등록합니다.
         /// 이미 등록된 서비스는 덮어쓰지 않습니다.
         /// </summary>
+        /// <remarks>
+        /// <para><b>MS.Extensions.DI 혼용 시 주의사항 (Fix 7)</b></para>
+        /// <para>
+        /// Hybrid(Blazor+WPF) 시나리오에서 <c>IServiceCollection.AddDreamineHybridWpf()</c>를
+        /// 사용하면 Blazor의 <c>IServiceProvider</c>와 Dreamine의 <c>DMContainer</c>가
+        /// 동시에 활성화됩니다. 이중 등록으로 인한 혼란을 방지하려면:
+        /// <list type="number">
+        ///   <item>App.xaml.cs 의 Composition Root에서 <c>DreamineAppBuilder.Initialize()</c>를
+        ///   먼저 호출하여 DMContainer를 구성한 후, <c>IServiceCollection</c>에
+        ///   <c>services.AddSingleton&lt;IViewManager&gt;(sp =&gt; DMContainer.Resolve&lt;IViewManager&gt;())</c>
+        ///   형태로 브리지 등록하십시오.</item>
+        ///   <item>단일 서비스를 두 컨테이너 모두에 직접 등록하지 마십시오.
+        ///   어느 한쪽에만 등록하고 다른 쪽은 팩토리 위임으로 연결하는 것이 안전합니다.</item>
+        ///   <item>장기적으로는 <c>DMContainer.SetContainer(new MsExtensionsAdapter(serviceProvider))</c>
+        ///   패턴으로 DMContainer가 MS.Extensions.DI를 백엔드로 사용하도록 통합할 수 있습니다.</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
         public static void RegisterDefaultServices()
         {
             if (!DMContainer.IsRegistered<IWindowStateService>())
@@ -92,6 +110,11 @@ namespace Dreamine.MVVM.Wpf
             if (!DMContainer.IsRegistered<IViewManager>())
             {
                 DMContainer.RegisterSingleton<IViewManager, ViewManager>();
+            }
+
+            if (!DMContainer.IsRegistered<IDialogService>())
+            {
+                DMContainer.RegisterSingleton<IDialogService, WpfDialogService>();
             }
         }
 
