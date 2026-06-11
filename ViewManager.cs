@@ -1,4 +1,5 @@
 ﻿using Dreamine.MVVM.Core;
+using Dreamine.MVVM.Interfaces.DependencyInjection;
 using Dreamine.MVVM.Interfaces.Navigation;
 using Dreamine.MVVM.Interfaces.Windows;
 using Dreamine.MVVM.Locators;
@@ -14,6 +15,25 @@ namespace Dreamine.MVVM.Wpf
     /// </summary>
     public sealed class ViewManager : IViewManager
     {
+        private readonly IServiceResolver _resolver;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver.
+        /// Prefer this constructor in production and test code to avoid the global DMContainer dependency.
+        /// </summary>
+        /// <param name="resolver">The service resolver used to obtain ViewModel instances.</param>
+        public ViewManager(IServiceResolver resolver)
+        {
+            _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ViewManager"/> backed by the global DMContainer.
+        /// </summary>
+        public ViewManager() : this(DMContainer.GetResolver())
+        {
+        }
+
         /// <inheritdoc />
         public void Show<TViewModel>() where TViewModel : class
         {
@@ -25,7 +45,7 @@ namespace Dreamine.MVVM.Wpf
         {
             ArgumentNullException.ThrowIfNull(viewModelType);
 
-            object viewModel = DMContainer.Resolve(viewModelType);
+            object viewModel = _resolver.Resolve(viewModelType);
             object? view = ViewModelLocator.ResolveView(viewModelType);
             DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: true);
         }
@@ -40,7 +60,7 @@ namespace Dreamine.MVVM.Wpf
             DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: false);
         }
 
-        private static void DisplayResolvedView(
+        private void DisplayResolvedView(
             object? view,
             object viewModel,
             Type viewModelType,
@@ -70,7 +90,7 @@ namespace Dreamine.MVVM.Wpf
             }
         }
 
-        private static void ShowWindow(Window window, object viewModel, Type viewModelType)
+        private void ShowWindow(Window window, object viewModel, Type viewModelType)
         {
             string windowKey = GetViewKey(viewModelType);
             IWindowStateService? windowStateService = TryResolve<IWindowStateService>();
@@ -102,7 +122,7 @@ namespace Dreamine.MVVM.Wpf
             window.Show();
         }
 
-        private static void ShowUserControl(UserControl userControl, object viewModel, bool useRegionNavigator)
+        private void ShowUserControl(UserControl userControl, object viewModel, bool useRegionNavigator)
         {
             userControl.DataContext = viewModel;
 
@@ -121,7 +141,7 @@ namespace Dreamine.MVVM.Wpf
             }.Show();
         }
 
-        private static void ShowPage(Page page, object viewModel, bool useRegionNavigator)
+        private void ShowPage(Page page, object viewModel, bool useRegionNavigator)
         {
             page.DataContext = viewModel;
 
@@ -186,9 +206,9 @@ namespace Dreamine.MVVM.Wpf
             return name;
         }
 
-        private static T? TryResolve<T>() where T : class
+        private T? TryResolve<T>() where T : class
         {
-            DMContainer.TryResolve<T>(out var result);
+            _resolver.TryResolve<T>(out var result);
             return result;
         }
     }
