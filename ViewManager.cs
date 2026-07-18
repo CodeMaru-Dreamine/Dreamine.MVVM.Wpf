@@ -12,25 +12,92 @@ using System.Windows.Controls;
 namespace Dreamine.MVVM.Wpf
 {
     /// <summary>
-    /// Resolves and displays WPF Views based on ViewModel types.
-    /// Custom view types are supported by registering <see cref="IViewDisplayStrategy"/>
-    /// implementations via <see cref="RegisterDisplayStrategy"/>.
+    /// \if KO
+    /// <para>View Manager 기능과 관련 상태를 캡슐화합니다.</para>
+    /// \endif
+    /// \if EN
+    /// <para>Resolves and displays WPF Views based on ViewModel types. Custom view types are supported by registering <see cref="IViewDisplayStrategy"/> implementations via <see cref="RegisterDisplayStrategy"/>.</para>
+    /// \endif
     /// </summary>
     public sealed class ViewManager : IViewManager
     {
+        /// <summary>
+        /// \if KO
+        /// <para>resolver 값을 보관합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Stores the resolver value.</para>
+        /// \endif
+        /// </summary>
         private readonly IServiceResolver _resolver;
+        /// <summary>
+        /// \if KO
+        /// <para>custom Strategies 값을 보관합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Stores the custom strategies value.</para>
+        /// \endif
+        /// </summary>
         private readonly List<IViewDisplayStrategy> _customStrategies = new();
+        /// <summary>
+        /// \if KO
+        /// <para>fallback Window Width 값을 보관합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Stores the fallback window width value.</para>
+        /// \endif
+        /// </summary>
         private readonly double _fallbackWindowWidth;
+        /// <summary>
+        /// \if KO
+        /// <para>fallback Window Height 값을 보관합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Stores the fallback window height value.</para>
+        /// \endif
+        /// </summary>
         private readonly double _fallbackWindowHeight;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver
-        /// and optional fallback window dimensions for UserControl/Page views.
-        /// Prefer this constructor in tests and production code to avoid the global DMContainer dependency.
+        /// \if KO
+        /// <para>지정한 설정으로 <see cref="ViewManager"/> 클래스의 새 인스턴스를 초기화합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Initializes a new instance of <see cref="ViewManager"/> with an explicit resolver and optional fallback window dimensions for UserControl/Page views. Prefer this constructor in tests and production code to avoid the global DMContainer dependency.</para>
+        /// \endif
         /// </summary>
-        /// <param name="resolver">The service resolver used to obtain ViewModel instances.</param>
-        /// <param name="fallbackWindowWidth">Width of the fallback window. Defaults to 800.</param>
-        /// <param name="fallbackWindowHeight">Height of the fallback window. Defaults to 600.</param>
+        /// <param name="resolver">
+        /// \if KO
+        /// <para>resolver에 사용할 <see cref="IServiceResolver"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The service resolver used to obtain ViewModel instances.</para>
+        /// \endif
+        /// </param>
+        /// <param name="fallbackWindowWidth">
+        /// \if KO
+        /// <para>fallback Window Width에 사용할 <see cref="double"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Width of the fallback window. Defaults to 800.</para>
+        /// \endif
+        /// </param>
+        /// <param name="fallbackWindowHeight">
+        /// \if KO
+        /// <para>fallback Window Height에 사용할 <see cref="double"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Height of the fallback window. Defaults to 600.</para>
+        /// \endif
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// \if KO
+        /// <para>필수 입력 인자 중 하나가 <see langword="null"/>인 경우 발생합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Thrown when a required input argument is <see langword="null"/>.</para>
+        /// \endif
+        /// </exception>
         public ViewManager(IServiceResolver resolver, double fallbackWindowWidth = 800, double fallbackWindowHeight = 600)
         {
             _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
@@ -39,31 +106,76 @@ namespace Dreamine.MVVM.Wpf
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ViewManager"/> backed by the global DMContainer.
+        /// \if KO
+        /// <para>지정한 설정으로 <see cref="ViewManager"/> 클래스의 새 인스턴스를 초기화합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Initializes a new instance of <see cref="ViewManager"/> backed by the global DMContainer.</para>
+        /// \endif
         /// </summary>
         public ViewManager() : this(DMContainer.GetResolver())
         {
         }
 
         /// <summary>
-        /// Registers a custom display strategy that handles view types not natively supported
-        /// (Window, UserControl, Page). Strategies are evaluated in registration order before
-        /// the built-in switch, so registered strategies take precedence.
+        /// \if KO
+        /// <para>Register Display Strategy 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Registers a custom display strategy that handles view types not natively supported (Window, UserControl, Page). Strategies are evaluated in registration order before the built-in switch, so registered strategies take precedence.</para>
+        /// \endif
         /// </summary>
-        /// <param name="strategy">The strategy to register.</param>
+        /// <param name="strategy">
+        /// \if KO
+        /// <para>strategy에 사용할 <see cref="IViewDisplayStrategy"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The strategy to register.</para>
+        /// \endif
+        /// </param>
         public void RegisterDisplayStrategy(IViewDisplayStrategy strategy)
         {
             ArgumentNullException.ThrowIfNull(strategy);
             _customStrategies.Add(strategy);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// \if KO
+        /// <para>Show 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the show operation.</para>
+        /// \endif
+        /// </summary>
+        /// <typeparam name="TViewModel">
+        /// \if KO
+        /// <para>TViewModel 형식 매개변수입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The TViewModel type parameter.</para>
+        /// \endif
+        /// </typeparam>
         public void Show<TViewModel>() where TViewModel : class
         {
             Show(typeof(TViewModel));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// \if KO
+        /// <para>Show 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the show operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="viewModelType">
+        /// \if KO
+        /// <para>view Model Type에 사용할 <see cref="Type"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Type"/> value used for view model type.</para>
+        /// \endif
+        /// </param>
         public void Show(Type viewModelType)
         {
             ArgumentNullException.ThrowIfNull(viewModelType);
@@ -73,7 +185,22 @@ namespace Dreamine.MVVM.Wpf
             DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// \if KO
+        /// <para>Navigate 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the navigate operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="viewModel">
+        /// \if KO
+        /// <para>view Model에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view model.</para>
+        /// \endif
+        /// </param>
         public void Navigate(object viewModel)
         {
             ArgumentNullException.ThrowIfNull(viewModel);
@@ -83,6 +210,46 @@ namespace Dreamine.MVVM.Wpf
             DisplayResolvedView(view, viewModel, viewModelType, useRegionNavigator: false);
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Display Resolved View 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the display resolved view operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="view">
+        /// \if KO
+        /// <para>view에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModel">
+        /// \if KO
+        /// <para>view Model에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view model.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModelType">
+        /// \if KO
+        /// <para>view Model Type에 사용할 <see cref="Type"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Type"/> value used for view model type.</para>
+        /// \endif
+        /// </param>
+        /// <param name="useRegionNavigator">
+        /// \if KO
+        /// <para>use Region Navigator에 사용할 <see cref="bool"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="bool"/> value used for use region navigator.</para>
+        /// \endif
+        /// </param>
         private void DisplayResolvedView(
             object? view,
             object viewModel,
@@ -130,6 +297,38 @@ namespace Dreamine.MVVM.Wpf
             }
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Show Window 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the show window operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="window">
+        /// \if KO
+        /// <para>window에 사용할 <see cref="Window"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Window"/> value used for window.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModel">
+        /// \if KO
+        /// <para>view Model에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view model.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModelType">
+        /// \if KO
+        /// <para>view Model Type에 사용할 <see cref="Type"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Type"/> value used for view model type.</para>
+        /// \endif
+        /// </param>
         private void ShowWindow(Window window, object viewModel, Type viewModelType)
         {
             string windowKey = GetViewKey(viewModelType);
@@ -162,6 +361,38 @@ namespace Dreamine.MVVM.Wpf
             window.Show();
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Show User Control 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the show user control operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="userControl">
+        /// \if KO
+        /// <para>user Control에 사용할 <see cref="UserControl"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="UserControl"/> value used for user control.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModel">
+        /// \if KO
+        /// <para>view Model에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view model.</para>
+        /// \endif
+        /// </param>
+        /// <param name="useRegionNavigator">
+        /// \if KO
+        /// <para>use Region Navigator에 사용할 <see cref="bool"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="bool"/> value used for use region navigator.</para>
+        /// \endif
+        /// </param>
         private void ShowUserControl(UserControl userControl, object viewModel, bool useRegionNavigator)
         {
             userControl.DataContext = viewModel;
@@ -181,6 +412,38 @@ namespace Dreamine.MVVM.Wpf
             }.Show();
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Show Page 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the show page operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="page">
+        /// \if KO
+        /// <para>page에 사용할 <see cref="Page"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Page"/> value used for page.</para>
+        /// \endif
+        /// </param>
+        /// <param name="viewModel">
+        /// \if KO
+        /// <para>view Model에 사용할 <see cref="object"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="object"/> value used for view model.</para>
+        /// \endif
+        /// </param>
+        /// <param name="useRegionNavigator">
+        /// \if KO
+        /// <para>use Region Navigator에 사용할 <see cref="bool"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="bool"/> value used for use region navigator.</para>
+        /// \endif
+        /// </param>
         private void ShowPage(Page page, object viewModel, bool useRegionNavigator)
         {
             page.DataContext = viewModel;
@@ -200,6 +463,22 @@ namespace Dreamine.MVVM.Wpf
             }.Show();
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Activate Existing Window 작업을 수행합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Performs the activate existing window operation.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="windowKey">
+        /// \if KO
+        /// <para>window Key에 사용할 <see cref="string"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="string"/> value used for window key.</para>
+        /// \endif
+        /// </param>
         private static void ActivateExistingWindow(string windowKey)
         {
             foreach (Window window in Application.Current.Windows)
@@ -219,6 +498,30 @@ namespace Dreamine.MVVM.Wpf
             }
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>View Key 값을 가져옵니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Gets the view key value.</para>
+        /// \endif
+        /// </summary>
+        /// <param name="type">
+        /// \if KO
+        /// <para>type에 사용할 <see cref="Type"/> 값입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="Type"/> value used for type.</para>
+        /// \endif
+        /// </param>
+        /// <returns>
+        /// \if KO
+        /// <para>Get View Key 작업에서 생성한 <see cref="string"/> 결과입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <see cref="string"/> result produced by the get view key operation.</para>
+        /// \endif
+        /// </returns>
         private static string GetViewKey(Type type)
         {
             string name = type.Name;
@@ -238,6 +541,30 @@ namespace Dreamine.MVVM.Wpf
             return name;
         }
 
+        /// <summary>
+        /// \if KO
+        /// <para>Resolve 작업을 시도하고 성공 여부를 반환합니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>Attempts to resolve and returns whether the operation succeeds.</para>
+        /// \endif
+        /// </summary>
+        /// <typeparam name="T">
+        /// \if KO
+        /// <para>T 형식 매개변수입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The T type parameter.</para>
+        /// \endif
+        /// </typeparam>
+        /// <returns>
+        /// \if KO
+        /// <para>Try Resolve 작업에서 생성한 <typeparamref name="T"/> 결과입니다.</para>
+        /// \endif
+        /// \if EN
+        /// <para>The <typeparamref name="T"/> result produced by the try resolve operation.</para>
+        /// \endif
+        /// </returns>
         private T? TryResolve<T>() where T : class
         {
             _resolver.TryResolve<T>(out var result);
